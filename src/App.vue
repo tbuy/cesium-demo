@@ -45,7 +45,41 @@
                 fullscreenElement: document.body,
             });
 
-        }
+            //场景设置（设置背景色，隐藏地图）
+            viewer.scene.backgroundColor = new Cesium.Color.fromCssColorString('#0B1629')
+            viewer.scene.globe.show = !viewer.scene.globe.show;
+
+            //画地图
+            viewer.dataSources.add(Cesium.GeoJsonDataSource.load('../static/json/world.json', {
+                stroke: new Cesium.Color.fromCssColorString('pink'),
+                fill: new Cesium.Color.fromCssColorString('pink').withAlpha(0.9),
+                strokeWidth: 3,
+                markerSymbol: '?'
+            }));
+
+            //初始化动画
+            this.setView(viewer, 160.08, 8, 40000000);
+        },
+        methods: {
+            /**
+            * 设置相机位置
+            * viewer 视图对象
+            * longitude 经度
+            * dimension 纬度
+            * height 高度
+            */
+            setView: function (viewer, longitude, dimension, height) {
+                //设置相机位置
+                viewer.camera.setView({
+                    destination: Cesium.Cartesian3.fromDegrees(longitude, dimension, height),
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0),
+                        pitch: Cesium.Math.toRadians(-90),
+                        roll: Cesium.Math.toRadians(0)
+                    }
+                });
+            },
+        },
     }
 
 </script>
@@ -57,7 +91,12 @@
         -moz-osx-font-smoothing: grayscale;
         text-align: center;
         color: #2c3e50;
-        margin-top: 60px;
+    }
+
+    .cesium-viewer-bottom,
+    .cesium-viewer-animationContainer,
+    .cesium-viewer-timelineContainer {
+        display: none !important;
     }
 
 </style>
