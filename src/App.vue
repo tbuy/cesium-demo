@@ -8,6 +8,7 @@
     import axios from 'axios'
     import Cesium from 'cesium/Cesium'
     import widgets from 'cesium/Widgets/widgets.css'
+    import airline from '../static/json/airline.json'
 
     export default {
         name: 'App',
@@ -59,15 +60,16 @@
 
             //初始化动画
             this.setView(viewer, 160.08, 8, 40000000);
+            this.addCityPoint(viewer, airline);
         },
         methods: {
             /**
-            * 设置相机位置
-            * viewer 视图对象
-            * longitude 经度
-            * dimension 纬度
-            * height 高度
-            */
+             * 设置相机位置
+             * viewer 视图对象
+             * longitude 经度
+             * dimension 纬度
+             * height 高度
+             */
             setView: function (viewer, longitude, dimension, height) {
                 //设置相机位置
                 viewer.camera.setView({
@@ -77,6 +79,45 @@
                         pitch: Cesium.Math.toRadians(-90),
                         roll: Cesium.Math.toRadians(0)
                     }
+                });
+            },
+            /**
+             * 添加圆点和文字
+             * viewer 视图对象
+             * cityJson 城市json
+             */
+            addCityPoint: function (viewer, cityJson) {
+                viewer.scene.postProcessStages.fxaa.enabled = false;
+                // 添加圆点和文字
+                cityJson.forEach(item => {
+                    viewer.entities.add({
+                        // id: item.id,
+                        name: item[item.length - 1].name + "dian",
+
+                        position: Cesium.Cartesian3.fromDegrees(item[item.length - 1].longitude,
+                            item[item.length - 1].dimension, 10000000),
+                        //点样式
+                        point: {
+                            pixelSize: 4,
+                            color: Cesium.Color.fromCssColorString('#0B93F6'),
+                            outlineColor: Cesium.Color.WHITE,
+                            outlineWidth: 1
+                        },
+                        //字体标签样式
+                        label: {
+                            text: "",
+                            font: 'normal 32px MicroSoft YaHei',
+                            scale: 0.5, //这里非常巧妙的先将字体大小放大一倍在缩小一倍
+                            color: Cesium.Color.RED,
+                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                            outlineWidth: 1,
+                            //垂直位置
+                            // verticalOrigin : Cesium.VerticalOrigin.BUTTON,
+                            //中心位置
+                            pixelOffset: new Cesium.Cartesian2(0, 20)
+                        },
+
+                    });
                 });
             },
         },
